@@ -71,6 +71,7 @@
   },
   "dependencies": {
     "dotenv-webpack": "^1.5.4",
+    "firebase": "^4.5.2",
     "react-firebase-file-uploader": "^2.4.1"
   },
   "jest": {
