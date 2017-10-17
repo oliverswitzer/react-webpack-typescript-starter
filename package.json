@@ -69,7 +69,10 @@
     "webpack-dev-server": "^2.9.2",
     "webpack-merge": "^4.1.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "dotenv-webpack": "^1.5.4",
+    "react-firebase-file-uploader": "^2.4.1"
+  },
   "jest": {
     "moduleFileExtensions": [
       "ts",
