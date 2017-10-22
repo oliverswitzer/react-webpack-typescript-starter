@@ -5,13 +5,21 @@ import {Howl} from 'howler'
 
 interface MusicFileUploaderProps {
 }
+private interface FileUpload {
+  id: string
+  url?: string
+  uploaded: boolean
+  progress: number
+}
 
 interface MusicFileUploaderState {
-  fileUpload: string,
+  fileUploads: FileUpload[],
   isUploading: boolean,
   progress: number,
-  fileUrl: string
+  fileUrl: string,
+  lastUploadIndex: number
 }
+
 
 const firebaseConfig = {
   apiKey: `${process.env.FIREBASE_API_KEY}`,
@@ -32,11 +40,28 @@ export default class MusicFileUploader extends React.Component<MusicFileUploader
       fileUpload: '',
       isUploading: false,
       progress: 0,
-      fileUrl: ''
+      fileUrl: '',
+      lastUploadIndex: 0
     }
   }
 
-  handleUploadStart = () => this.setState({isUploading: true, progress: 0})
+  handleUploadStart = (task: any) => {
+    const newUpload = {
+      id: this.state.lastUploadIndex++,
+      url: null,
+      uploaded: false,
+      progress: 0
+    } as FileUpload
+
+
+    debugger
+
+    this.setState({
+      fileUploads: this.state.fileUploads.concat(newUpload),
+      isUploading: true,
+      progress: 0
+    })
+  }
   handleProgress = (progress) => {
     this.setState({progress})
     console.log(`Upload Status: ${progress}%`)
@@ -45,10 +70,14 @@ export default class MusicFileUploader extends React.Component<MusicFileUploader
     this.setState({isUploading: false})
     console.error(error)
   }
-  handleUploadSuccess = (filename) => {
+  handleUploadSuccess = (filename, task: any) => {
     this.setState({fileUpload: filename, progress: 100, isUploading: false})
     firebaseApp.storage().ref().child(filename).getDownloadURL().then(url => {
       this.setState({fileUrl: url})
+
+      debugger
+      task.snapshot.ref.fullPath
+
 
       console.log('Done Uploading!')
     })
@@ -65,6 +94,7 @@ export default class MusicFileUploader extends React.Component<MusicFileUploader
         onUploadError={this.handleUploadError}
         onUploadSuccess={this.handleUploadSuccess}
         onProgress={this.handleProgress}
+        multiple
       />
 
       {this.state.fileUrl ?
